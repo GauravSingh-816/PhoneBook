@@ -1,110 +1,100 @@
 package models;
 
-import java.sql.*;
-import java.util.ArrayList;
 import myutils.Util;
-import java.util.*;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ContactDataAccess {
 
-    private Connection connect;
+	private Connection connect;
 
+	public ContactDataAccess() {
+		try {
+			this.connect = Util.getConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public ContactDataAccess() {
-        try {
-            this.connect = Util.getConnection();
+	public boolean addContact(Contact contact) {
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+		try {
+			String query = "INSERT INTO tb_contacts (firstname, lastname, phonenumber, user) VALUES (?, ?, ?, ?)";
+			PreparedStatement stm = connect.prepareStatement(query);
 
-    public boolean addContact(Contact contact) {
-        try {
-            String query = "INSERT INTO tb_contacts (firstname, lastname, phonenumber, user) VALUES (?, ?, ?, ?)";
-            PreparedStatement stm = connect.prepareStatement(query);
+			stm.setString(1, contact.getFirstname());
+			stm.setString(2, contact.getLastname());
+			stm.setString(3, contact.getPhoneNumber());
+			stm.setInt(4, UserDataAccess.currentUserId);
 
-            stm.setString(1, contact.getFirstname());
-            stm.setString(2, contact.getLastname());
-            stm.setString(3, contact.getPhoneNumber());
-            stm.setInt(4, UserDataAccess.currentUserId);
+			int row = stm.executeUpdate();
 
-            int row = stm.executeUpdate();
-            if (row > 0)
-                return true;
-            else
-                return false;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
+			if (row > 0)
+				return true;
+			else
+				return false;
 
-    public boolean updateContact(Contact contact) {
-        try {
-            String query = "UPDATE tb_contacts SET firstname=?, lastname=?, phonenumber=? WHERE id=? AND user=?";
-            PreparedStatement stm = connect.prepareStatement(query);
+		} catch (SQLException e) {
+			return false;
+		}
+	}
 
-            stm.setString(1, contact.getFirstname());
-            stm.setString(2, contact.getLastname());
-            stm.setString(3, contact.getPhoneNumber());
-            stm.setInt(4, contact.getId());
-            stm.setInt(5, UserDataAccess.currentUserId);
+	public boolean updateContact(Contact contact) {
 
-            int row = stm.executeUpdate();
-            if (row > 0)
-                return true;
-            else
-                return false;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
+		try {
+			String query = "UPDATE tb_contacts SET firstname=?, lastname=?, phonenumber=? WHERE id=? AND user=?";
+			PreparedStatement stm = connect.prepareStatement(query);
 
-    public List<Contact> getContacts() {
+			stm.setString(1, contact.getFirstname());
+			stm.setString(2, contact.getLastname());
+			stm.setString(3, contact.getPhoneNumber());
+			stm.setInt(4, contact.getId());
+			stm.setInt(5, UserDataAccess.currentUserId);
 
-        List<Contact> contactList = new ArrayList<>();
+			int row = stm.executeUpdate();
 
-        try {
-            String query = "SELECT * FROM tb_contacts WHERE user = ?";
-            PreparedStatement stm = connect.prepareStatement(query);
+			if (row > 0)
+				return true;
+			else
+				return false;
 
-            stm.setInt(1, UserDataAccess.currentUserId);
+		} catch (SQLException e) {
+			return false;
+		}
+	}
 
-            ResultSet result = stm.executeQuery();
+	public List<Contact> getContacts() {
 
-            while (result.next()) {
-                int contactId = result.getInt("id");
-                String firstName = result.getString("firstname");
-                String lastName = result.getString("lastname");
-                String phoneNumber = result.getString("phonenumber");
+		List<Contact> contactList = new ArrayList<>();
 
-                Contact contact = new Contact(contactId, firstName, lastName, phoneNumber);
+		try {
+			String query = "SELECT * FROM tb_contacts WHERE user = ?";
+			PreparedStatement stm = connect.prepareStatement(query);
 
-                contactList.add(contact);
-            }
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return contactList;
-    }
+			stm.setInt(1, UserDataAccess.currentUserId);
 
-    public boolean deleteContact(Contact contact){
-        try{
-            String query = "DELETE FROM tb_contacts WHERE id=? AND user=?";
-            PreparedStatement stm = connect.prepareStatement(query);
+			ResultSet result = stm.executeQuery();
 
-            stm.setInt(1, contact.getId());
-            stm.setInt(2, UserDataAccess.currentUserId);
+			while (result.next()) {
+				int contactId = result.getInt("id");
+				String firstName = result.getString("firstname");
+				String lastName = result.getString("lastname");
+				String phoneNumber = result.getString("phonenumber");
 
-            int row = stm.executeUpdate();
+				Contact contact = new Contact(contactId, firstName, lastName, phoneNumber);
 
-            return row > 0;
+				contactList.add(contact);
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
 
-        } catch (SQLException e){
-            return false;
-        }
-    }
+		return contactList;
+	}
+
 }
-
-
