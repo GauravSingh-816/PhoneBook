@@ -93,8 +93,23 @@ public class ContactDataAccess {
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
-
 		return contactList;
 	}
 
+	public boolean deleteContact(Contact contact){
+		try{
+			String query = "DELETE FROM tb_contacts WHERE id=? AND user=?";
+			PreparedStatement stm = connect.prepareStatement(query);
+
+			stm.setInt(1, contact.getId());
+			stm.setInt(2, UserDataAccess.currentUserId);
+
+			int row = stm.executeUpdate();
+
+			return row > 0;
+
+		} catch (SQLException e){
+			return false;
+		}
+	}
 }

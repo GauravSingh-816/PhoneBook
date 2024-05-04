@@ -89,6 +89,24 @@ public class ContactController {
 				
 			}
 		});
+
+		contactView.addDeleteButtonListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Contact contact = getSelectedContact();
+
+				contact.setFirstname(contactView.getFirstName());
+				contact.setLastname(contactView.getLastName());
+				contact.setPhoneNumber(contactView.getPhoneNumber());
+
+				if(new ContactDataAccess().deleteContact(contact)){
+					updateContactList();
+					JOptionPane.showMessageDialog(null,"Contact deleted successfully.");
+				}
+				else{
+					JOptionPane.showMessageDialog(null,"Something went wrong.");
+				}
+			}
+		});
 	}
 	
 	private void updateContactList() {
