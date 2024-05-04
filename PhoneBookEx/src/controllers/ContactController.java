@@ -5,12 +5,14 @@ import models.ContactDataAccess;
 import models.UserDataAccess;
 import views.ContactView;
 import views.LoginView;
-
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class ContactController {
@@ -86,7 +88,6 @@ public class ContactController {
 				LoginView lv = new LoginView();
 				lv.setVisible(true);
 				new LoginController(lv);
-				
 			}
 		});
 
@@ -100,15 +101,33 @@ public class ContactController {
 
 				if(new ContactDataAccess().deleteContact(contact)){
 					updateContactList();
-					JOptionPane.showMessageDialog(null,"Contact deleted successfully.");
+					JOptionPane.showMessageDialog(null,"Contact deleted.");
 				}
 				else{
-					JOptionPane.showMessageDialog(null,"Something went wrong.");
+					JOptionPane.showMessageDialog(null,"Not able to delete.");
 				}
 			}
 		});
+
+		contactView.addSearchButtonListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String input = JOptionPane.showInputDialog(null,"Contact's Name");
+				if (input == null || input.isBlank()){
+					updateContactList();
+				}
+				else{
+					updateContactList(input);
+				}
+			}
+		});
+
+		contactView.addExportListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				exportContactsToCSV("contacts_export.csv");  // Specify the path or use a file chooser
+			}
+		});
 	}
-	
+
 	private void updateContactList() {
 		ContactDataAccess data = new ContactDataAccess();
 		
@@ -134,14 +153,30 @@ public class ContactController {
 		contactView.getLastNameField().setText(contact.getLastname());
 		contactView.getPhoneNumberField().setText(contact.getPhoneNumber());
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	private void updateContactList(String contactname){ // overloaded update specifically for search function
+		ContactDataAccess data = new ContactDataAccess();
+
+		List<Contact> contacts = data.getContacts(contactname);
+
+		contactView.setContactsToModel(contacts);
+
+	}
+
+	public void exportContactsToCSV(String filename) {
+		ContactDataAccess contactData = new ContactDataAccess();
+		List<Contact> contacts = contactData.getContacts();  // Retrieve all contacts for the current user
+
+		try (FileWriter fileWriter = new FileWriter(filename)) {
+			fileWriter.append("First Name,Last Name,Phone Number\n");  // CSV Header
+			for (Contact contact : contacts) {
+				fileWriter.append(contact.getFirstname()).append(",");
+				fileWriter.append(contact.getLastname()).append(",");
+				fileWriter.append(contact.getPhoneNumber()).append("\n");
+			}
+			JOptionPane.showMessageDialog(null, "Contacts exported successfully to " + filename);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Error occurred while exporting contacts: " + e.getMessage());
+		}
+	}
 }

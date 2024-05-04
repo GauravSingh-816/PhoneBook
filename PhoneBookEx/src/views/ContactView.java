@@ -12,7 +12,7 @@ public class ContactView extends JFrame {
 
 	// create component references
 	private JTextField txtFirstname, txtLastname, txtPhoneNumber;
-	private JButton btnAdd, btnUpdate, btnDelete, btnSearch, btnLogout;
+	private JButton btnAdd, btnUpdate, btnDelete, btnSearch, btnLogout, btnExport;
 	private JList<String> contactList;
 	
 	private DefaultListModel<String> listModel;
@@ -36,6 +36,7 @@ public class ContactView extends JFrame {
 		btnDelete = new JButton("Delete");
 		btnSearch = new JButton("Search");
 		btnLogout = new JButton("Logout");
+		btnExport = new JButton("Export");
 		contactList = new JList<String>();
 		contactList.setModel(listModel);
 		
@@ -60,6 +61,7 @@ public class ContactView extends JFrame {
 		// buttons panel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(btnSearch);
+		buttonPanel.add(btnExport);
 		buttonPanel.add(btnDelete);
 		buttonPanel.add(btnLogout);
 		
@@ -68,14 +70,48 @@ public class ContactView extends JFrame {
 		add(inputPanel, BorderLayout.NORTH);
 		add(listPanel, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.SOUTH);
-		
-		// getContacts(loadContacts());
-		
-		
+
+		//Setting colors of the buttons
+		Color c1 = new Color(0,150,255);
+		btnSearch.setOpaque(true);
+		btnSearch.setBorderPainted(false);
+		btnSearch.setBackground(c1);
+		btnSearch.setForeground(Color.white);
+
+		Color c2 = new Color(71, 151, 36);
+		btnExport.setOpaque(true);
+		btnExport.setBorderPainted(false);
+		btnExport.setBackground(c2);
+		btnExport.setForeground(Color.white);
+
+		Color c3 = new Color(255,0,0);
+		btnDelete.setOpaque(true);
+		btnDelete.setBorderPainted(false);
+		btnDelete.setBackground(c3);
+		btnDelete.setForeground(Color.white);
+
+		Color c4 = new Color(200,200,0);
+		btnLogout.setOpaque(true);
+		btnLogout.setBorderPainted(false);
+		btnLogout.setBackground(c4);
+		btnLogout.setForeground(Color.white);
+
+		Color c5 = new Color(24, 247, 76 );
+		btnAdd.setOpaque(true);
+		btnAdd.setBorderPainted(false);
+		btnAdd.setBackground(c5);
+		btnAdd.setForeground(Color.white);
+
+		Color c6 = new Color(0, 0, 0);
+		btnUpdate.setOpaque(true);
+		btnUpdate.setBorderPainted(false);
+		btnUpdate.setBackground(c6);
+		btnUpdate.setForeground(Color.white);
+
 		pack();
 		setLocationRelativeTo(null);
 	}
-	
+
 	public void addAddButtonListener(ActionListener listener) {
 		btnAdd.addActionListener(listener);
 	}
@@ -99,7 +135,11 @@ public class ContactView extends JFrame {
 	public void addContactListListener(ListSelectionListener listener) {
 		contactList.addListSelectionListener(listener);
 	}
-	
+
+	public void addExportListener(ActionListener listener){
+		btnExport.addActionListener(listener);
+	}
+
 	// getters
 	public JTextField getFirstNameField() {
 		return txtFirstname;
@@ -112,6 +152,7 @@ public class ContactView extends JFrame {
 	public JTextField getLastNameField() {
 		return txtLastname;
 	}
+
 	public String getLastName() {
 		return getLastNameField().getText();
 	}
@@ -119,6 +160,7 @@ public class ContactView extends JFrame {
 	public JTextField getPhoneNumberField() {
 		return txtPhoneNumber;
 	}
+
 	public String getPhoneNumber() {
 		return getPhoneNumberField().getText();
 	}
@@ -141,19 +183,4 @@ public class ContactView extends JFrame {
 		
 		return contactList;
 	}
-	
-//	private List<Contact> loadContacts() {
-//		
-//		ContactDataAccess data = new ContactDataAccess();
-//		
-//		List<Contact> c = data.getContacts(UserDataAccess.currentUserId);
-//		return c;
-//	}
-	
-	
-	
-	
-	
-	
-	
 }
